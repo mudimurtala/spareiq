@@ -1,0 +1,2 @@
+# spareiq
+An AI-powered spare parts inventory and finder platform for the Nigerian auto market. Built with React, TypeScript, Tailwind, and Vite.
