@@ -3,6 +3,8 @@
 ### AI-Powered Spare Parts Inventory & Finder Platform for the Nigerian Auto Market
 
 🌐 **Live Demo:** [https://spareiq.netlify.app](https://spareiq.netlify.app)
+
+
 ![SpareIQ Screenshot](screenshot.png)
 
 ---
