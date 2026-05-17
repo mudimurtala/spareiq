@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { Navbar } from "../components/Navbar";
 import { PartGrid } from "../features/inventory/components/PartGrid";
-import { placeholderParts } from "../lib/placeholderParts";
+import { db } from "../lib/firebase";
 
 export const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,7 +19,23 @@ export const HomePage = () => {
     }
   };
 
-  const featuredParts = placeholderParts.slice(0, 6);
+  const { data: featuredParts = [], isLoading } = useQuery({
+    queryKey: ["featuredParts"],
+    queryFn: async () => {
+      try {
+        const q = query(
+          collection(db, "parts"),
+          orderBy("createdAt", "desc"),
+          limit(6),
+        );
+        const snap = await getDocs(q);
+        return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      } catch (err) {
+        const snap = await getDocs(collection(db, "parts"));
+        return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      }
+    },
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50">
@@ -68,7 +86,18 @@ export const HomePage = () => {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-950 text-center mb-8 sm:mb-12 lg:mb-16">
             Featured Parts
           </h2>
-          <PartGrid parts={featuredParts} />
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-56 rounded-lg bg-gray-200 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : (
+            <PartGrid parts={featuredParts} />
+          )}
         </div>
       </section>
     </div>

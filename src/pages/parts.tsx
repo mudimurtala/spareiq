@@ -1,8 +1,10 @@
 import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { collection, getDocs } from "firebase/firestore";
 import { Navbar } from "../components/Navbar";
 import { PartGrid } from "../features/inventory/components/PartGrid";
-import { placeholderParts } from "../lib/placeholderParts";
+import { db } from "../lib/firebase";
 import type { SparePart } from "../types/sparePart";
 
 export const PartsPage = () => {
@@ -23,8 +25,16 @@ export const PartsPage = () => {
     "Cooling System",
   ];
 
+  const { data: parts = [], isLoading } = useQuery({
+    queryKey: ["parts"],
+    queryFn: async (): Promise<SparePart[]> => {
+      const snap = await getDocs(collection(db, "parts"));
+      return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+    },
+  });
+
   const filteredParts = useMemo(() => {
-    return placeholderParts.filter((part: SparePart) => {
+    return parts.filter((part: SparePart) => {
       // Search filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
@@ -55,7 +65,14 @@ export const PartsPage = () => {
 
       return true;
     });
-  }, [searchQuery, selectedCategories, selectedCondition, minPrice, maxPrice]);
+  }, [
+    parts,
+    searchQuery,
+    selectedCategories,
+    selectedCondition,
+    minPrice,
+    maxPrice,
+  ]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -201,7 +218,13 @@ export const PartsPage = () => {
               </div>
 
               {/* Part Grid */}
-              <PartGrid parts={filteredParts} />
+              {isLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <div className="h-12 w-12 rounded-full border-4 border-primary-950 border-t-transparent animate-spin" />
+                </div>
+              ) : (
+                <PartGrid parts={filteredParts} />
+              )}
             </div>
           </div>
         </div>

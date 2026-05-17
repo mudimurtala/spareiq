@@ -1,13 +1,16 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { addDoc, collection } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import type { SparePart } from "../../types/sparePart";
 
-export const AddPartPage = () => {
+export const EditPartPage = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
+
+  const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Engine");
@@ -30,6 +33,38 @@ export const AddPartPage = () => {
     "Body Parts",
     "Cooling System",
   ];
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    (async () => {
+      try {
+        const docRef = doc(db, "parts", id);
+        const snap = await getDoc(docRef);
+        if (!snap.exists()) {
+          alert("Part not found");
+          navigate("/dashboard/inventory");
+          return;
+        }
+        const data = snap.data() as Omit<SparePart, "id">;
+        setName(data.name || "");
+        setCategory(data.category || "Engine");
+        setCarMake(data.carMake || "");
+        setCarModel(data.carModel || "");
+        setCarYear(data.carYear || "");
+        setCondition(data.condition || "new");
+        setPrice(data.price || 0);
+        setStockQuantity(data.stockQuantity || 0);
+        setDescription(data.description || "");
+        setImageUrl(data.imageUrl || "");
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load part");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [id, navigate]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,35 +108,42 @@ export const AddPartPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!id) return;
     if (!validate()) {
       alert("Please fill all fields and upload an image.");
       return;
     }
 
-    const newPart: Omit<SparePart, "id"> = {
-      name: name.trim(),
-      category,
-      carMake: carMake.trim(),
-      carModel: carModel.trim(),
-      carYear: carYear.trim(),
-      condition,
-      price: Number(price),
-      stockQuantity: Number(stockQuantity),
-      imageUrl,
-      description: description.trim(),
-      createdAt: new Date().toISOString(),
-    };
-
     try {
-      await addDoc(collection(db, "parts"), newPart);
+      const docRef = doc(db, "parts", id);
+      await updateDoc(docRef, {
+        name: name.trim(),
+        category,
+        carMake: carMake.trim(),
+        carModel: carModel.trim(),
+        carYear: carYear.trim(),
+        condition,
+        price: Number(price),
+        stockQuantity: Number(stockQuantity),
+        imageUrl,
+        description: description.trim(),
+      });
       await qc.invalidateQueries({ queryKey: ["parts"] });
-      alert("Part added successfully");
+      alert("Part updated successfully");
       navigate("/dashboard/inventory");
     } catch (err) {
       console.error(err);
-      alert("Failed to save part. Please try again.");
+      alert("Failed to update part. Please try again.");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+        <div className="h-12 w-12 rounded-full border-4 border-primary-950 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
@@ -115,7 +157,7 @@ export const AddPartPage = () => {
         </button>
 
         <h1 className="text-2xl sm:text-3xl font-bold text-primary-950 mb-6">
-          Add New Part
+          Edit Part
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -280,7 +322,7 @@ export const AddPartPage = () => {
               disabled={uploading}
               className="w-full inline-flex items-center justify-center rounded-md bg-accent-500 px-6 py-3 font-bold text-primary-950 hover:bg-opacity-90 transition"
             >
-              Save Part
+              Save Changes
             </button>
           </div>
         </form>
@@ -288,3 +330,5 @@ export const AddPartPage = () => {
     </div>
   );
 };
+
+export default EditPartPage;

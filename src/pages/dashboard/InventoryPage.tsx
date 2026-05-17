@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -132,13 +132,16 @@ export const InventoryPage = () => {
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
-                          <Link
-                            to={`/dashboard/inventory/new?edit=${part.id}`}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate(`/dashboard/inventory/${part.id}/edit`)
+                            }
                             className="inline-flex items-center gap-2 rounded-md border border-primary-950 px-3 py-2 text-sm font-semibold text-primary-950 transition hover:bg-primary-950 hover:text-white"
                           >
                             <Pencil className="w-4 h-4" />
                             Edit
-                          </Link>
+                          </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(part.id)}

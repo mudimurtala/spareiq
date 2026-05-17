@@ -1,14 +1,60 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  where,
+  limit,
+} from "firebase/firestore";
 import { Navbar } from "../components/Navbar";
 import { PartCard } from "../features/inventory/components/PartCard";
-import { placeholderParts } from "../lib/placeholderParts";
+import { db } from "../lib/firebase";
+import type { SparePart } from "../types/sparePart";
 
 export const PartDetailPage = () => {
   const { id } = useParams<{ id: string }>();
 
-  // Find the part
-  const part = placeholderParts.find((p) => p.id === id);
+  const { data: part, isLoading } = useQuery({
+    queryKey: ["part", id],
+    queryFn: async (): Promise<(SparePart & { id: string }) | null> => {
+      if (!id) return null;
+      const ref = doc(db, "parts", id);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return null;
+      return { id: snap.id, ...(snap.data() as any) } as SparePart & {
+        id: string;
+      };
+    },
+  });
+
+  const relatedQuery = useQuery({
+    queryKey: ["related", part?.category, id],
+    enabled: !!part?.category,
+    queryFn: async (): Promise<SparePart[]> => {
+      const q = query(
+        collection(db, "parts"),
+        where("category", "==", part!.category),
+        limit(3),
+      );
+      const snap = await getDocs(q);
+      return snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as any) }) as SparePart)
+        .filter((p) => p.id !== id)
+        .slice(0, 3);
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+        <div className="h-12 w-12 rounded-full border-4 border-primary-950 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   if (!part) {
     return (
@@ -44,10 +90,7 @@ export const PartDetailPage = () => {
     return `₦${price.toLocaleString("en-NG")}`;
   };
 
-  // Find related parts (same category, excluding current part)
-  const relatedParts = placeholderParts
-    .filter((p) => p.category === part.category && p.id !== part.id)
-    .slice(0, 3);
+  const relatedParts = relatedQuery.data ?? [];
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50">
@@ -114,9 +157,7 @@ export const PartDetailPage = () => {
               {/* Stock Status */}
               <div className="mb-6">
                 <p
-                  className={`text-base sm:text-lg font-semibold ${
-                    isInStock ? "text-green-600" : "text-red-600"
-                  }`}
+                  className={`text-base sm:text-lg font-semibold ${isInStock ? "text-green-600" : "text-red-600"}`}
                 >
                   {isInStock
                     ? `${part.stockQuantity} in stock`
@@ -136,11 +177,7 @@ export const PartDetailPage = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   disabled={!isInStock}
-                  className={`flex-1 font-bold py-3 px-6 rounded-md transition-all duration-200 ${
-                    isInStock
-                      ? "bg-accent-500 text-primary-950 hover:bg-opacity-90"
-                      : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  }`}
+                  className={`flex-1 font-bold py-3 px-6 rounded-md transition-all duration-200 ${isInStock ? "bg-accent-500 text-primary-950 hover:bg-opacity-90" : "bg-gray-300 text-gray-600 cursor-not-allowed"}`}
                 >
                   Check Availability
                 </button>
@@ -172,3 +209,5 @@ export const PartDetailPage = () => {
     </div>
   );
 };
+
+export default PartDetailPage;
