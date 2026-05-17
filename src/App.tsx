@@ -6,6 +6,9 @@ import { PartDetailPage } from "./pages/partDetail";
 import { AiFinderPage } from "./pages/aiFinder";
 import { LoginPage } from "./pages/login";
 import { DashboardPage } from "./pages/dashboard";
+import { InventoryPage } from "./pages/dashboard/InventoryPage";
+import { AddPartPage } from "./pages/dashboard/AddPartPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -23,7 +26,30 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
 
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/inventory"
+            element={
+              <ProtectedRoute>
+                <InventoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/inventory/new"
+            element={
+              <ProtectedRoute>
+                <AddPartPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
     </QueryClientProvider>
