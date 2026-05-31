@@ -1,6 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Search,
+  Cog,
+  CircleStop,
+  Zap,
+  Car,
+  Shield,
+  Thermometer,
+  Bot,
+  BadgeCheck,
+  Tags,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { Navbar } from "../components/Navbar";
@@ -43,16 +54,16 @@ export const HomePage = () => {
 
       {/* Hero Section */}
       <section
-        className="w-full py-12 sm:py-16 lg:py-24"
+        className="w-full py-10 sm:py-12 lg:py-12"
         style={{ backgroundColor: "#0F172A" }}
       >
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           {/* Hero Content */}
-          <div className="text-center mb-8 sm:mb-10 lg:mb-12">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4">
+          <div className="text-center mb-6 sm:mb-8 lg:mb-10">
+            <h1 className="text-3xl sm:text-4xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
               Find Any Spare Part, Fast.
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl font-semibold text-accent-500">
+            <p className="text-sm sm:text-base lg:text-lg font-semibold text-accent-500">
               Trusted by auto shops across Nigeria.
             </p>
           </div>
@@ -80,10 +91,81 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* Featured Parts Section */}
-      <section className="w-full py-12 sm:py-16 lg:py-24">
+      {/* Category Browse Section */}
+      <section className="w-full bg-gray-50 py-4">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-950 text-center mb-8 sm:mb-12 lg:mb-16">
+          <h3 className="text-base sm:text-lg font-bold text-primary-950 text-center mb-3">
+            Browse by Category
+          </h3>
+
+          <div className="grid grid-cols-3 gap-2 lg:grid-cols-6">
+            <Link
+              to={`/parts?category=${encodeURIComponent("Engine")}`}
+              className="bg-white rounded-lg shadow px-3 py-3 flex flex-col items-center justify-center hover:-translate-y-1 transform transition cursor-pointer"
+            >
+              <Cog className="w-5 h-5 text-primary-950" />
+              <span className="mt-1 text-sm font-bold text-primary-950">
+                Engine
+              </span>
+            </Link>
+
+            <Link
+              to={`/parts?category=${encodeURIComponent("Brakes")}`}
+              className="bg-white rounded-lg shadow px-3 py-3 flex flex-col items-center justify-center hover:-translate-y-1 transform transition cursor-pointer"
+            >
+              <CircleStop className="w-5 h-5 text-primary-950" />
+              <span className="mt-1 text-sm font-bold text-primary-950">
+                Brakes
+              </span>
+            </Link>
+
+            <Link
+              to={`/parts?category=${encodeURIComponent("Electrical")}`}
+              className="bg-white rounded-lg shadow px-3 py-3 flex flex-col items-center justify-center hover:-translate-y-1 transform transition cursor-pointer"
+            >
+              <Zap className="w-5 h-5 text-primary-950" />
+              <span className="mt-1 text-sm font-bold text-primary-950">
+                Electrical
+              </span>
+            </Link>
+
+            <Link
+              to={`/parts?category=${encodeURIComponent("Suspension")}`}
+              className="bg-white rounded-lg shadow px-3 py-3 flex flex-col items-center justify-center hover:-translate-y-1 transform transition cursor-pointer"
+            >
+              <Car className="w-5 h-5 text-primary-950" />
+              <span className="mt-1 text-sm font-bold text-primary-950">
+                Suspension
+              </span>
+            </Link>
+
+            <Link
+              to={`/parts?category=${encodeURIComponent("Body Parts")}`}
+              className="bg-white rounded-lg shadow px-3 py-3 flex flex-col items-center justify-center hover:-translate-y-1 transform transition cursor-pointer"
+            >
+              <Shield className="w-5 h-5 text-primary-950" />
+              <span className="mt-1 text-sm font-bold text-primary-950">
+                Body Parts
+              </span>
+            </Link>
+
+            <Link
+              to={`/parts?category=${encodeURIComponent("Cooling System")}`}
+              className="bg-white rounded-lg shadow px-3 py-3 flex flex-col items-center justify-center hover:-translate-y-1 transform transition cursor-pointer"
+            >
+              <Thermometer className="w-5 h-5 text-primary-950" />
+              <span className="mt-1 text-sm font-bold text-primary-950">
+                Cooling System
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Parts Section */}
+      <section className="w-full py-6 sm:py-8 lg:py-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-950 text-center mb-6 sm:mb-8 lg:mb-10">
             Featured Parts
           </h2>
           {isLoading ? (
@@ -98,6 +180,54 @@ export const HomePage = () => {
           ) : (
             <PartGrid parts={featuredParts} />
           )}
+        </div>
+      </section>
+
+      {/* Why SpareIQ Section */}
+      <section className="w-full bg-white py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold text-primary-950">
+              Why SpareIQ?
+            </h3>
+            <div className="mt-3 flex items-center justify-center">
+              <div className="w-12 h-1 rounded bg-accent-500" />
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="flex flex-col items-center text-center px-6 py-6">
+              <Bot className="w-10 h-10 text-accent-500 mb-3" />
+              <h4 className="text-lg font-bold text-primary-950 mb-2">
+                AI-Powered Part Finder
+              </h4>
+              <p className="text-gray-600">
+                Describe any part in plain English or Pidgin and our AI will
+                identify it instantly.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center px-6 py-6">
+              <BadgeCheck className="w-10 h-10 text-accent-500 mb-3" />
+              <h4 className="text-lg font-bold text-primary-950 mb-2">
+                Trusted Nigerian Dealers
+              </h4>
+              <p className="text-gray-600">
+                Every part listed is from verified auto shops across Nigeria.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center px-6 py-6">
+              <Tags className="w-10 h-10 text-accent-500 mb-3" />
+              <h4 className="text-lg font-bold text-primary-950 mb-2">
+                New and Tokunbo Parts
+              </h4>
+              <p className="text-gray-600">
+                Find brand new parts or quality fairly-used Tokunbo options at
+                honest prices.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </div>

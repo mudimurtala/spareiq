@@ -1,5 +1,10 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const HomePage = lazy(() =>
@@ -31,7 +36,18 @@ const AddPartPage = lazy(() =>
 const EditPartPage = lazy(() => import("./pages/dashboard/EditPartPage"));
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Footer } from "./components/Footer";
 import "./index.css";
+
+// Layout component for public pages with footer
+function PublicLayout() {
+  return (
+    <>
+      <Outlet />
+      <Footer />
+    </>
+  );
+}
 
 const queryClient = new QueryClient();
 
@@ -47,14 +63,16 @@ function App() {
       >
         <Router>
           <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/parts" element={<PartsPage />} />
-            <Route path="/parts/:id" element={<PartDetailPage />} />
-            <Route path="/ai-finder" element={<AiFinderPage />} />
-            <Route path="/login" element={<LoginPage />} />
+            {/* Public Routes with Footer */}
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/parts" element={<PartsPage />} />
+              <Route path="/parts/:id" element={<PartDetailPage />} />
+              <Route path="/ai-finder" element={<AiFinderPage />} />
+              <Route path="/login" element={<LoginPage />} />
+            </Route>
 
-            {/* Protected Routes */}
+            {/* Protected Routes (no footer) */}
             <Route
               path="/dashboard"
               element={

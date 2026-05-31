@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Menu, X, Settings } from "lucide-react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Menu, X, Settings, Search } from "lucide-react";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggle = () => setIsOpen((v) => !v);
   const close = () => setIsOpen(false);
@@ -40,6 +41,15 @@ export const Navbar = () => {
               {l.label}
             </NavLink>
           ))}
+
+          {/* Search icon - navigate to /parts */}
+          <button
+            onClick={() => navigate("/parts")}
+            aria-label="Search parts"
+            className="text-white hover:text-amber-500 transition-colors duration-150 p-1"
+          >
+            <Search className="w-5 h-5" />
+          </button>
 
           <Link
             to="/login"
