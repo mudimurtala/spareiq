@@ -62,12 +62,7 @@ export const PartCard = ({ part }: PartCardProps) => {
           </div>
 
           {/* View Details Button */}
-          <button
-            className="mt-auto w-full bg-accent-500 text-primary-950 font-bold py-2 sm:py-2.5 rounded-md hover:bg-opacity-90 transition-all duration-200 text-sm sm:text-base"
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
+          <button className="mt-auto w-full bg-accent-500 text-primary-950 font-bold py-2 sm:py-2.5 rounded-md hover:bg-opacity-90 transition-all duration-200 text-sm sm:text-base">
             View Details
           </button>
         </div>

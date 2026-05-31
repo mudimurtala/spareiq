@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { DashboardLayout } from "../../features/dashboard/components/DashboardLayout";
 import { db } from "../../lib/firebase";
 import type { SparePart } from "../../types/sparePart";
 
@@ -37,7 +38,7 @@ export const InventoryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <DashboardLayout>
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -160,6 +161,6 @@ export const InventoryPage = () => {
           </div>
         ) : null}
       </div>
-    </div>
+    </DashboardLayout>
   );
 };

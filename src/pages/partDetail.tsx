@@ -177,9 +177,18 @@ export const PartDetailPage = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   disabled={!isInStock}
+                  onClick={() => {
+                    const subject = encodeURIComponent(
+                      `Availability Enquiry for ${part.name}`,
+                    );
+                    const body = encodeURIComponent(
+                      `Hello, I am interested in the ${part.name} (${part.carMake} ${part.carModel} ${part.carYear}) listed on SpareIQ. Please let me know if this part is available and how I can proceed. Thank you.`,
+                    );
+                    window.location.href = `mailto:ibnmuhyideen95@gmail.com?subject=${subject}&body=${body}`;
+                  }}
                   className={`flex-1 font-bold py-3 px-6 rounded-md transition-all duration-200 ${isInStock ? "bg-accent-500 text-primary-950 hover:bg-opacity-90" : "bg-gray-300 text-gray-600 cursor-not-allowed"}`}
                 >
-                  Check Availability
+                  Enquire About This Part
                 </button>
                 <Link
                   to="/parts"

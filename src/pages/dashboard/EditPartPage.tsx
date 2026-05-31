@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
+import { DashboardLayout } from "../../features/dashboard/components/DashboardLayout";
 import type { SparePart } from "../../types/sparePart";
 
 export const EditPartPage = () => {
@@ -146,7 +147,7 @@ export const EditPartPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <DashboardLayout>
       <div className="mx-auto max-w-3xl rounded-2xl bg-white p-8 shadow-sm">
         <button
           type="button"
@@ -327,7 +328,7 @@ export const EditPartPage = () => {
           </div>
         </form>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
