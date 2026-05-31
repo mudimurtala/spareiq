@@ -11,7 +11,7 @@ import type { SparePart } from "../types/sparePart";
 export const PartsPage = () => {
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
-  
+
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedCondition, setSelectedCondition] = useState<
